@@ -3,38 +3,69 @@ import heapq
 
 class Solution:
     def maxPoints(self, grid: List[List[int]], queries: List[int]) -> List[int]:
+        """
+        Finds the maximum number of points reachable from the top-left corner of the grid for each query.
+
+        Args:
+            grid (List[List[int]]): The grid of integers.
+            queries (List[int]): The list of query values.
+
+        Returns:
+            List[int]: The list of maximum number of points for each query.
+        """
+        # Dimensions of the grid
         m, n = len(grid), len(grid[0])
-        k = len(queries)
+        # Number of queries  
+        k = len(queries)  
 
+        # Sort queries with their original indices to restore the original order later
         sorted_queries = sorted([(query, i) for i, query in enumerate(queries)])
-        result = [0] * k
+        # Initialize the result list
+        result = [0] * k  
 
-        heap = [(grid[0][0], 0, 0)]
-        visited = set()
-        points = 0
-        dp = {}
+        # Initialize the heap with the starting cell (0, 0)
+        # (value, row, col)
+        heap = [(grid[0][0], 0, 0)]  
+        # Keep track of visited cells
+        visited = set()  
+        # Keep track of the number of reachable points
+        points = 0  
+        # memoize intermediate results
+        dp = {} 
 
         query_index = 0
         while query_index < k:
-            query, index = sorted_queries[query_index]
+            # Get the current query and its original index
+            query, index = sorted_queries[query_index]  
 
+            # Keep popping cells from the heap until the current cell's value is greater than or equal to the query value
             while heap and heap[0][0] < query:
-                val, i, j = heapq.heappop(heap)
-                if (i, j) in visited:
+                # Get the cell with the smallest value
+                _val, i, j = heapq.heappop(heap)  
+                # If the cell has already been visited, skip it
+                if (i, j) in visited:  
                     continue
-                visited.add((i, j))
-                points += 1
+                # Mark the cell as visited
+                visited.add((i, j))  
+                # Increment the number of reachable points
+                points += 1  
                 dp[(i, j)] = query
 
+                # Add the neighbors of the current cell to the heap
                 for di, dj in [(0, 1), (1, 0), (0, -1), (-1, 0)]:
-                    new_i, new_j = i + di, j + dj
+                    # Calculate the coordinates of the neighbor
+                    new_i, new_j = i + di, j + dj  
+                    # If the neighbor is within the grid and has not been visited, add it to the heap
                     if 0 <= new_i < m and 0 <= new_j < n and (new_i, new_j) not in visited:
                         heapq.heappush(heap, (grid[new_i][new_j], new_i, new_j))
 
-            result[index] = points
-            query_index += 1
+            # Store the number of reachable points for the current query
+            result[index] = points  
+            # Move to the next query
+            query_index += 1  
 
         return result
+
 
 if __name__ == '__main__':
     print('2503. Maximum Number of Points From Grid Queries')
