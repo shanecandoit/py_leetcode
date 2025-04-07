@@ -60,6 +60,11 @@ def generate_plan_with_ollama(code_content):
 
 def save_plan_to_file(plan_content, output_file):
     """Save the generated plan to a markdown file."""
+
+    # remove bold things
+    # annoying
+    plan_content = plan_content.replace("**", "")
+
     try:
         with open(output_file, 'w') as file:
             file.write(plan_content)
