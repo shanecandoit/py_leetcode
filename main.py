@@ -1,76 +1,83 @@
 
-"""
-416. Partition Equal Subset Sum
-Given an integer array nums, return true if you can partition the array into two subsets 
-such that the sum of the elements in both subsets is equal or false otherwise.
+""" 3375. Minimum Operations to Make Array Values Equal to K
+You are given an integer array nums and an integer k.
+
+An integer h is called valid if all values in the array that are 
+strictly greater than h are identical.
+
+For example, if nums = [10, 8, 10, 8], a valid integer is h = 9 
+because all nums[i] > 9 are equal to 10, but 5 is not a valid integer.
+
+You are allowed to perform the following operation on nums:
+
+Select an integer h that is valid for the current values in nums.
+For each index i where nums[i] > h, set nums[i] to h.
+Return the minimum number of operations required 
+to make every element in nums equal to k. If it is impossible 
+to make all elements equal to k, return -1.
 
 Example 1:
-    Input: nums = [1,5,11,5]
-    Output: true
-    Explanation: The array can be partitioned as [1, 5, 5] and [11].
+    Input: nums = [5,2,5,4,5], k = 2
+    Output: 2
+    Explanation:
+    The operations can be performed in order using valid integers 4 and then 2.
 
 Example 2:
-    Input: nums = [1,2,3,5]
-    Output: false
-    Explanation: The array cannot be partitioned into equal sum subsets.
-"""
+    Input: nums = [2,1,2], k = 2
+    Output: -1
+    Explanation:
+    It is impossible to make all the values equal to 2.
 
+Example 3:
+    Input: nums = [9,7,5,3], k = 1
+    Output: 4
+    Explanation:
+    The operations can be performed using valid integers in the order 7, 5, 3, and 1.
+"""
 from typing import List
 
 class Solution:
-    def canPartition(self, nums: List[int]) -> bool:
-        total_sum = sum(nums)
+    def minOperations(self, nums: List[int], k: int) -> int:
+        # 1. Check if any element is less than k
+        if any(num < k for num in nums):
+            return -1
 
-        # If the total sum is odd, we cannot partition it into two equal subsets
-        if total_sum % 2 != 0:
-            return False
-
-        target = total_sum // 2
-        
-        # dp set will store all possible sums achievable using subsets of nums
-        dp = {0}
-
+        # 2. Count unique elements strictly greater than k
+        # Use a set for efficient counting of unique elements
+        unique_greater_than_k = set()
         for num in nums:
-            # Create a temporary set to store new sums for this iteration
-            # to avoid modifying dp while iterating over it.
-            next_dp_adds = set()
-            for current_sum in dp:
-                new_sum = current_sum + num
-                if new_sum == target:
-                    return True
-                # Only add sums less than target to keep the set size manageable
-                if new_sum < target:
-                    next_dp_adds.add(new_sum)
-            
-            # Update dp with the newly found sums
-            dp.update(next_dp_adds)
-            
-            # Optimization: if a number itself is the target (and hasn't been found yet)
-            # This case is implicitly handled when current_sum is 0, but explicit check might be slightly faster
-            # if num == target:
-            #     return True
-            # Note: The check `if num > target: continue` is generally useful but removed here
-            # as the core logic handles it by not adding sums > target.
+            if num > k:
+                unique_greater_than_k.add(num)
 
-        # If the loop finishes without finding the target sum
-        return False
-    
+        # 3. The number of operations is the count of these unique elements
+        return len(unique_greater_than_k)
+
+
 if __name__ == "__main__":
-    
+
     # ex 1
-    nums = [1,5,11,5]
-    result = Solution().canPartition(nums)
-    want = True
-    print( result == want, want, result)
+    nums = [5,2,5,4,5]
+    k = 2
+    got = Solution().minOperations(nums, k)
+    want = 2
+    print(f"got: {got}, want: {want}, correct: {got == want}")
 
     # ex 2
-    nums = [1,2,3,5]
-    result = Solution().canPartition(nums)
-    want = False
-    print( result == want, want, result)
+    nums = [2,1,2]
+    k = 2
+    got = Solution().minOperations(nums, k)
+    want = -1
+    print(f"got: {got}, want: {want}, correct: {got == want}")
 
-# https://leetcode.com/problems/partition-equal-subset-sum/submissions/1599668054/?envType=daily-question&envId=2025-04-07
-# Runtime 190 ms
-# Beats 94.65%
-# Memory 19.42 MB
-# Beats 56.59%
+    # ex 3
+    nums = [9,7,5,3]
+    k = 1
+    got = Solution().minOperations(nums, k)
+    want = 4
+    print(f"got: {got}, want: {want}, correct: {got == want}")
+
+# https://leetcode.com/problems/minimum-operations-to-make-array-values-equal-to-k/submissions/1601836852/?envType=daily-question&envId=2025-04-09
+# Runtime 78 ms
+# Beats 6.84%
+# Memory 17.92 MB
+# Beats 9.43%
