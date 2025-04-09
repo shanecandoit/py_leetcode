@@ -38,19 +38,29 @@ from typing import List
 
 class Solution:
     def minOperations(self, nums: List[int], k: int) -> int:
-        # 1. Check if any element is less than k
+        """
+        Calculates the minimum number of operations to make array values equal to k.
+
+        Args:
+            nums: The input list of integers.
+            k: The target value.
+
+        Returns:
+            The minimum operations, or -1 if it's impossible.
+        """
+
         if any(num < k for num in nums):
             return -1
 
-        # 2. Count unique elements strictly greater than k
-        # Use a set for efficient counting of unique elements
         unique_greater_than_k = set()
         for num in nums:
             if num > k:
                 unique_greater_than_k.add(num)
 
-        # 3. The number of operations is the count of these unique elements
-        return len(unique_greater_than_k)
+        if not unique_greater_than_k:
+            return 0  # Handle the case where no elements are greater than k.
+
+        return len(unique_greater_than_k)  # The length of the set is the minimum operations
 
 
 if __name__ == "__main__":
@@ -76,8 +86,8 @@ if __name__ == "__main__":
     want = 4
     print(f"got: {got}, want: {want}, correct: {got == want}")
 
-# https://leetcode.com/problems/minimum-operations-to-make-array-values-equal-to-k/submissions/1601836852/?envType=daily-question&envId=2025-04-09
-# Runtime 78 ms
-# Beats 6.84%
-# Memory 17.92 MB
-# Beats 9.43%
+# https://leetcode.com/problems/minimum-operations-to-make-array-values-equal-to-k/submissions/1601841960/?envType=daily-question&envId=2025-04-09
+# Runtime 73 ms
+# Beats 18.63%
+# Memory 17.62 MB
+# Beats 75.47%
