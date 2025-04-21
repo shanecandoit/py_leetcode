@@ -1,93 +1,87 @@
+""" 2145. Count the Hidden Sequences
 
-""" 3375. Minimum Operations to Make Array Values Equal to K
-You are given an integer array nums and an integer k.
+You are given a 0-indexed array of n integers differences, 
+which describes the differences between each pair of consecutive integers of a hidden sequence of length (n + 1). 
+More formally, call the hidden sequence hidden, then we have that differences[i] = hidden[i + 1] - hidden[i].
 
-An integer h is called valid if all values in the array that are 
-strictly greater than h are identical.
+You are further given two integers lower and upper that describe the inclusive range of values [lower, upper] 
+that the hidden sequence can contain.
 
-For example, if nums = [10, 8, 10, 8], a valid integer is h = 9 
-because all nums[i] > 9 are equal to 10, but 5 is not a valid integer.
-
-You are allowed to perform the following operation on nums:
-
-Select an integer h that is valid for the current values in nums.
-For each index i where nums[i] > h, set nums[i] to h.
-Return the minimum number of operations required 
-to make every element in nums equal to k. If it is impossible 
-to make all elements equal to k, return -1.
+For example, given differences = [1, -3, 4], lower = 1, upper = 6, 
+the hidden sequence is a sequence of length 4 whose elements are in between 1 and 6 (inclusive).
+[3, 4, 1, 5] and [4, 5, 2, 6] are possible hidden sequences.
+[5, 6, 3, 7] is not possible since it contains an element greater than 6.
+[1, 2, 3, 4] is not possible since the differences are not correct.
+Return the number of possible hidden sequences there are. If there are no possible sequences, return 0.
 
 Example 1:
-    Input: nums = [5,2,5,4,5], k = 2
+    Input: differences = [1,-3,4], lower = 1, upper = 6
     Output: 2
-    Explanation:
-    The operations can be performed in order using valid integers 4 and then 2.
+    Explanation: The possible hidden sequences are:
+    - [3, 4, 1, 5]
+    - [4, 5, 2, 6]
+    Thus, we return 2.
 
 Example 2:
-    Input: nums = [2,1,2], k = 2
-    Output: -1
-    Explanation:
-    It is impossible to make all the values equal to 2.
+    Input: differences = [3,-4,5,1,-2], lower = -4, upper = 5
+    Output: 4
+    Explanation: The possible hidden sequences are:
+    - [-3, 0, -4, 1, 2, 0]
+    - [-2, 1, -3, 2, 3, 1]
+    - [-1, 2, -2, 3, 4, 2]
+    - [0, 3, -1, 4, 5, 3]
+    Thus, we return 4.
 
 Example 3:
-    Input: nums = [9,7,5,3], k = 1
-    Output: 4
-    Explanation:
-    The operations can be performed using valid integers in the order 7, 5, 3, and 1.
+    Input: differences = [4,-7,2], lower = 3, upper = 6
+    Output: 0
+    Explanation: There are no possible hidden sequences. Thus, we return 0.
 """
+
 from typing import List
 
 class Solution:
-    def minOperations(self, nums: List[int], k: int) -> int:
-        """
-        Calculates the minimum number of operations to make array values equal to k.
+    def numberOfArrays(self, differences: List[int], lower: int, upper: int) -> int:
+        n = len(differences)
+        min_val = 0
+        max_val = 0
+        curr_val = 0
+        for diff in differences:
+            curr_val += diff
+            min_val = min(min_val, curr_val)
+            max_val = max(max_val, curr_val)
+        # The range of the first element is [lower - min_val, upper - max_val]
+        # The number of valid first elements is the size of this range  
+        # The size of the range is (upper - max_val) - (lower - min_val) + 1
 
-        Args:
-            nums: The input list of integers.
-            k: The target value.
+        return max(0, (upper - max_val) - (lower - min_val) + 1)
 
-        Returns:
-            The minimum operations, or -1 if it's impossible.
-        """
+# ex 1
+differences = [1,-3,4]
+lower = 1
+upper = 6
+got = Solution().numberOfArrays(differences, lower, upper)
+want = 2
+print(got == want, got, want)
 
-        if any(num < k for num in nums):
-            return -1
+# ex 2
+differences = [3,-4,5,1,-2]
+lower = -4
+upper = 5
+got = Solution().numberOfArrays(differences, lower, upper)
+want = 4
+print(got == want, got, want)
 
-        unique_greater_than_k = set()
-        for num in nums:
-            if num > k:
-                unique_greater_than_k.add(num)
+# ex 3
+differences = [4,-7,2]
+lower = 3
+upper = 6
+got = Solution().numberOfArrays(differences, lower, upper)
+want = 0
+print(got == want, got, want)
 
-        if not unique_greater_than_k:
-            return 0  # Handle the case where no elements are greater than k.
-
-        return len(unique_greater_than_k)  # The length of the set is the minimum operations
-
-
-if __name__ == "__main__":
-
-    # ex 1
-    nums = [5,2,5,4,5]
-    k = 2
-    got = Solution().minOperations(nums, k)
-    want = 2
-    print(f"got: {got}, want: {want}, correct: {got == want}")
-
-    # ex 2
-    nums = [2,1,2]
-    k = 2
-    got = Solution().minOperations(nums, k)
-    want = -1
-    print(f"got: {got}, want: {want}, correct: {got == want}")
-
-    # ex 3
-    nums = [9,7,5,3]
-    k = 1
-    got = Solution().minOperations(nums, k)
-    want = 4
-    print(f"got: {got}, want: {want}, correct: {got == want}")
-
-# https://leetcode.com/problems/minimum-operations-to-make-array-values-equal-to-k/submissions/1601841960/?envType=daily-question&envId=2025-04-09
-# Runtime 73 ms
-# Beats 18.63%
-# Memory 17.62 MB
-# Beats 75.47%
+# https://leetcode.com/problems/count-the-hidden-sequences/submissions/1613769669/?envType=daily-question&envId=2025-04-21
+# Runtime 155 ms
+# Beats 43.43%
+# Memory 32.28 MB
+# Beats 75.76%
