@@ -1,4 +1,4 @@
 
 # LeetCode in Python
 
-- 4/21 [2145. Count the Hidden Sequences](https://leetcode.com/problems/count-the-hidden-sequences)
+- 4/28 [2302. Count Subarrays With Score Less Than K](https://leetcode.com/problems/count-subarrays-with-score-less-than-k)

@@ -1,87 +1,65 @@
-""" 2145. Count the Hidden Sequences
 
-You are given a 0-indexed array of n integers differences, 
-which describes the differences between each pair of consecutive integers of a hidden sequence of length (n + 1). 
-More formally, call the hidden sequence hidden, then we have that differences[i] = hidden[i + 1] - hidden[i].
+""" 2302. Count Subarrays With Score Less Than K
+The score of an array is defined as the product of its sum and its length.
 
-You are further given two integers lower and upper that describe the inclusive range of values [lower, upper] 
-that the hidden sequence can contain.
+For example, the score of [1, 2, 3, 4, 5] is (1 + 2 + 3 + 4 + 5) * 5 = 75.
+Given a positive integer array nums and an integer k, return the number of non-empty subarrays of nums whose score is strictly less than k.
 
-For example, given differences = [1, -3, 4], lower = 1, upper = 6, 
-the hidden sequence is a sequence of length 4 whose elements are in between 1 and 6 (inclusive).
-[3, 4, 1, 5] and [4, 5, 2, 6] are possible hidden sequences.
-[5, 6, 3, 7] is not possible since it contains an element greater than 6.
-[1, 2, 3, 4] is not possible since the differences are not correct.
-Return the number of possible hidden sequences there are. If there are no possible sequences, return 0.
+A subarray is a contiguous sequence of elements within an array.
 
 Example 1:
-    Input: differences = [1,-3,4], lower = 1, upper = 6
-    Output: 2
-    Explanation: The possible hidden sequences are:
-    - [3, 4, 1, 5]
-    - [4, 5, 2, 6]
-    Thus, we return 2.
+    Input: nums = [2,1,4,3,5], k = 10
+    Output: 6
+    Explanation:
+    The 6 subarrays having scores less than 10 are:
+    - [2] with score 2 * 1 = 2.
+    - [1] with score 1 * 1 = 1.
+    - [4] with score 4 * 1 = 4.
+    - [3] with score 3 * 1 = 3. 
+    - [5] with score 5 * 1 = 5.
+    - [2,1] with score (2 + 1) * 2 = 6.
+    Note that subarrays such as [1,4] and [4,3,5] are not considered because their scores are 10 and 36 respectively, while we need scores strictly less than 10.
 
 Example 2:
-    Input: differences = [3,-4,5,1,-2], lower = -4, upper = 5
-    Output: 4
-    Explanation: The possible hidden sequences are:
-    - [-3, 0, -4, 1, 2, 0]
-    - [-2, 1, -3, 2, 3, 1]
-    - [-1, 2, -2, 3, 4, 2]
-    - [0, 3, -1, 4, 5, 3]
-    Thus, we return 4.
-
-Example 3:
-    Input: differences = [4,-7,2], lower = 3, upper = 6
-    Output: 0
-    Explanation: There are no possible hidden sequences. Thus, we return 0.
+    Input: nums = [1,1,1], k = 5
+    Output: 5
+    Explanation:
+    Every subarray except [1,1,1] has a score less than 5.
+    [1,1,1] has a score (1 + 1 + 1) * 3 = 9, which is greater than 5.
+    Thus, there are 5 subarrays having scores less than 5.
 """
 
 from typing import List
 
 class Solution:
-    def numberOfArrays(self, differences: List[int], lower: int, upper: int) -> int:
-        n = len(differences)
-        min_val = 0
-        max_val = 0
-        curr_val = 0
-        for diff in differences:
-            curr_val += diff
-            min_val = min(min_val, curr_val)
-            max_val = max(max_val, curr_val)
-        # The range of the first element is [lower - min_val, upper - max_val]
-        # The number of valid first elements is the size of this range  
-        # The size of the range is (upper - max_val) - (lower - min_val) + 1
-
-        return max(0, (upper - max_val) - (lower - min_val) + 1)
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        ans = 0
+        l = 0
+        s = 0
+        for r in range(n):
+            s += nums[r]
+            while s * (r - l + 1) >= k:
+                s -= nums[l]
+                l += 1
+            ans += r - l + 1
+        return ans
 
 # ex 1
-differences = [1,-3,4]
-lower = 1
-upper = 6
-got = Solution().numberOfArrays(differences, lower, upper)
-want = 2
-print(got == want, got, want)
-
+nums = [2,1,4,3,5]
+k = 10
+result = Solution().countSubarrays(nums, k)
+want = 6
+print(f"want: {want}, result: {result}, test: {result == want}")
 # ex 2
-differences = [3,-4,5,1,-2]
-lower = -4
-upper = 5
-got = Solution().numberOfArrays(differences, lower, upper)
-want = 4
-print(got == want, got, want)
+nums = [1,1,1]
+k = 5
+result = Solution().countSubarrays(nums, k)
+want = 5
+print(f"want: {want}, result: {result}, test: {result == want}")
 
-# ex 3
-differences = [4,-7,2]
-lower = 3
-upper = 6
-got = Solution().numberOfArrays(differences, lower, upper)
-want = 0
-print(got == want, got, want)
-
-# https://leetcode.com/problems/count-the-hidden-sequences/submissions/1613769669/?envType=daily-question&envId=2025-04-21
-# Runtime 155 ms
-# Beats 43.43%
-# Memory 32.28 MB
-# Beats 75.76%
+# https://leetcode.com/problems/count-subarrays-with-score-less-than-k/submissions/1620493200/?envType=daily-question&envId=2025-04-28
+# Runtime 111 ms
+# Beats 85.60%
+# Memory 30.41 MB
+# Beats 61.29%
