@@ -4,7 +4,10 @@ import json
 from ollama import chat
 
 # Ollama models
-MODEL = "gemma3:1b"  # DO NOT CHANGE
+# deepseek-r1:latest
+# gemma3:1b
+# gemma3:4b
+MODEL = "gemma3:4b"  # DO NOT CHANGE
 
 
 def read_file_content(file_path):
@@ -28,8 +31,12 @@ def generate_plan_with_ollama(code_content):
     ```python
     {code_content}
     ```
+    Hints:
+    - Use '-' for lists, not '*'
+    - Do NOT use bold text
 
     Format your response as markdown with clear sections for:
+    # Plan for <the name of the function, file, or class>
     1. Code Overview
     2. Main Components
     3. Workflow
@@ -61,10 +68,36 @@ def generate_plan_with_ollama(code_content):
 def save_plan_to_file(plan_content, output_file):
     """Save the generated plan to a markdown file."""
 
+    lines = plan_content.splitlines()
+
+    # remove first line if it is "```markdown"
+    if lines[0] and lines[0].startswith("```markdown"):
+        lines[0] = ""
+
+    # remove last line if it is "```"
+    if lines[-1] and lines[-1].startswith("```"):
+        lines[-1] = ""
+
+
+    plan_content = "\n".join(lines).strip()
+
     # remove bold things
     # annoying
+    plan_content = plan_content.replace(" **", "")
+    plan_content = plan_content.replace("**  ", " ")
     plan_content = plan_content.replace("**", "")
 
+    # remove extra spaces in lists
+    plan_content = plan_content.replace("-  ", "- ") # -   
+    plan_content = plan_content.replace("-   ", "- ")
+    plan_content = plan_content.replace(".  ", ". ")
+
+    for line in plan_content.splitlines():
+        chopped = line.strip()
+        if chopped.startswith("* "):
+            new_line = line.replace("* ", "- ")
+            plan_content = plan_content.replace(line, new_line)
+            
     try:
         with open(output_file, 'w') as file:
             file.write(plan_content)

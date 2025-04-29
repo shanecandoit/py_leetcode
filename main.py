@@ -1,74 +1,67 @@
 
-""" 1346. Check If N and Its Double Exist
-Given an array arr of integers, check if there exist two indices i and j such that :
-    i != j
-    0 <= i, j < arr.length
-    arr[i] == 2 * arr[j]
- 
+""" 2962. Count Subarrays Where Max Element Appears at Least K Times
+You are given an integer array nums and a positive integer k.
+
+Return the number of subarrays where the maximum element of nums appears at least k times in that subarray.
+
+A subarray is a contiguous sequence of elements within an array.
+
 Example 1:
-    Input: arr = [10,2,5,3]
-    Output: true
-    Explanation: For i = 0 and j = 2, arr[i] == 10 == 2 * 5 == 2 * arr[j]
+    Input: nums = [1,3,2,3,3], k = 2
+    Output: 6
+    Explanation: The subarrays that contain the element 3 at least 2 times are: [1,3,2,3], [1,3,2,3,3], [3,2,3], [3,2,3,3], [2,3,3] and [3,3].
 
 Example 2:
-    Input: arr = [3,1,7,11]
-    Output: false
-    Explanation: There is no i and j that satisfy the conditions.
+    Input: nums = [1,4,2,1], k = 3
+    Output: 0
+    Explanation: No subarray contains the element 4 at least 3 times.
 """
 
 from typing import List
 
 class Solution:
-    def checkIfExist(self, arr: List[int]) -> bool:
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        max_num = max(nums)
+        count = 0
+        left = 0
+        max_count = 0
 
-        # can we O(n) ?
-        # Store all numbers in a set for O(1) lookup
-        seen = set()
-        
-        for num in arr:
-            # Do not iterate through twice
-            # Check if either double or half exists
-            if num * 2 in seen or (num % 2 == 0 and num // 2 in seen):
-                return True
-            # Add current number to seen set
-            seen.add(num)
-        
-        return False
+        for right in range(n):
+            if nums[right] == max_num:
+                max_count += 1
 
+            while max_count >= k:
+                if nums[left] == max_num:
+                    max_count -= 1
+                left += 1
+            count += left
+
+        return count
 
 # ex 1
-arr = [10,2,5,3]
-result = Solution().checkIfExist(arr)
-want = True
-print(f"ex1 want: {want}, result: {result}, test: {result == want}")
+nums = [1,3,2,3,3]
+k = 2
+got = Solution().countSubarrays(nums, k)
+want = 6
+print(f'got={got}, want={want}, ok={got==want}')
 
 # ex 2
-arr = [3,1,7,11]
-result = Solution().checkIfExist(arr)
-want = False
-print(f"ex2 want: {want}, result: {result}, test: {result == want}")
+nums = [1,4,2,1]
+k = 3
+got = Solution().countSubarrays(nums, k)
+want = 0
+print(f'got={got}, want={want}, ok={got==want}')
 
 # ex 3
-arr = [-2,0,10,-19,4,6,-8]
-result = Solution().checkIfExist(arr)
-want = False
-print(f"ex3 want: {want}, result: {result}, test: {result == want}")
+nums = [61,23,38,23,56,40,82,56,82,82,82,70,8,69,8,7,19,14,58,42,82,10,82,78,15,82]
+k = 2
+got = Solution().countSubarrays(nums, k)
+want = 224
+print(f'got={got}, want={want}, ok={got==want}')
 
-# ex 4
-arr = [0, 0]
-result = Solution().checkIfExist(arr)
-want = True
-print(f"ex4 want: {want}, result: {result}, test: {result == want}")
-
-'''
-ex1 want: True, result: True, test: True
-ex2 want: False, result: False, test: True
-ex3 want: False, result: False, test: True
-ex4 want: True, result: True, test: True
-'''
-
-# https://leetcode.com/problems/check-if-n-and-its-double-exist/submissions/1621211492/?envType=daily-question&envId=2025-04-29
-# Runtime 0 ms
-# Beats 100.00%
-# Memory 17.77 MB
-# Beats 80.04%
+# https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/submissions/1621238576/?envType=daily-question&envId=2025-04-29
+# Runtime 74 ms
+# Beats 74.92%
+# Memory 29.66 MB
+# Beats 37.54%
