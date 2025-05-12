@@ -88,8 +88,10 @@ def save_plan_to_file(plan_content, output_file):
     plan_content = plan_content.replace("**", "")
 
     # remove extra spaces in lists
-    plan_content = plan_content.replace("-  ", "- ") # -   
+    plan_content = plan_content.replace("-     ", "- ")
+    plan_content = plan_content.replace("-    ", "- ")
     plan_content = plan_content.replace("-   ", "- ")
+    plan_content = plan_content.replace("-  ", "- ")
     plan_content = plan_content.replace(".  ", ". ")
 
     for line in plan_content.splitlines():
