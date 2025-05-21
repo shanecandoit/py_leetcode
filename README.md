@@ -1,4 +1,4 @@
 
 # LeetCode in Python
 
-- 5/12 [2094. Finding 3-Digit Even Numbers](https://leetcode.com/problems/finding-3-digit-even-numbers)
+- 5/21 [73. Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes)
