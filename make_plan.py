@@ -81,6 +81,12 @@ def save_plan_to_file(plan_content, output_file):
 
     plan_content = "\n".join(lines).strip()
 
+    for line in plan_content.splitlines():
+        chopped = line.strip()
+        if chopped.startswith("* "):
+            new_line = line.replace("* ", "- ")
+            plan_content = plan_content.replace(line, new_line)
+
     # remove bold things
     # annoying
     plan_content = plan_content.replace(" **", "")
@@ -94,11 +100,9 @@ def save_plan_to_file(plan_content, output_file):
     plan_content = plan_content.replace("-  ", "- ")
     plan_content = plan_content.replace(".  ", ". ")
 
-    for line in plan_content.splitlines():
-        chopped = line.strip()
-        if chopped.startswith("* "):
-            new_line = line.replace("* ", "- ")
-            plan_content = plan_content.replace(line, new_line)
+    # add a newline at the end of the file
+    if not plan_content.endswith("\n"):
+        plan_content += "\n"
             
     try:
         with open(output_file, 'w') as file:
