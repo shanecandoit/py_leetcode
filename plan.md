@@ -1,40 +1,47 @@
-# Plan for Candy
+# Plan for `maxCandies`
 
 ## 1. Code Overview
 
-The code defines a `Solution` class with a `candy` method that calculates the minimum number of candies needed to distribute to children based on the given ratings, adhering to the rules that each child must have at least one candy and children with higher ratings get more candies than their neighbors.
-The code utilizes two passes�one from left to right and another from right to left to ensure the rules are correctly applied.
-Finally, it returns the total number of candies distributed. The code includes example tests as comments.
+The Python code implements a solution to the "Maximum Candies You Can Get From Boxes" problem on LeetCode. The code simulates the process of opening boxes, collecting candies, and utilizing keys to open more boxes and find contained boxes. It uses a queue to manage the boxes to be opened and sets to efficiently track open boxes, keys, and boxes found but not yet opened. The function returns the maximum number of candies collected.
 
 ## 2. Main Components
 
-- `Solution` Class: Encapsulates the `candy` method.
-- `candy(self, ratings: List[int]) -> int` Method:
-  - Takes a list of `ratings` as input.
-  - Initializes a `candies` list with the same length as `ratings`, initially filled with 1s.
-  - Performs two iterations:
-    - Left-to-Right Pass:  Increases the candy count for each child if their rating is higher than their left neighbor.
-    - Right-to-Left Pass: Increases the candy count for each child if their rating is higher than their right neighbor.
-  - Returns the sum of the `candies` list, representing the total number of candies.
+-   `collections.deque`: Used as a queue to manage boxes to be opened, providing efficient `popleft()` operation.
+-   `set`: Used to store `open_boxes`, `current_keys`, and `found_but_closed`. Sets provide fast membership checking (checking if a box is open or if a key exists) and avoid duplicate entries.
+-   `while` loop: The main loop simulates the iterative process of opening boxes and taking candies.
+-   `if` and `elif` statements:  These conditions determine the actions taken based on whether the current box has the key, is already open, or hasn't been opened yet.
 
 ## 3. Workflow
 
-    1. Initialization: The `candy` method receives a list of `ratings`. A list called `candies` is created with the same length, initialized with each element set to 1.
-    2. Left-to-Right Pass: The code iterates through the `ratings` list from the second element (index 1) to the end. For each child (index `i`), it checks if their rating is greater than the rating of their left neighbor (`ratings[i-1]`). If it is, it increases the number of candies for that child (`candies[i]`) to be one more than the candy count of their left neighbor (`candies[i-1]`).
-    3. Right-to-Left Pass: The code iterates through the `ratings` list from the second-to-last element (index `n-2`) to the beginning. For each child (index `i`), it checks if their rating is greater than the rating of their right neighbor (`ratings[i+1]`). If it is, it updates the number of candies for that child (`candies[i]`) to be the maximum of its current value and the candy count of its right neighbor plus one (`candies[i+1] + 1`). This ensures that the child gets at least as many candies as the child to its right, satisfying the rule.
-    4. Return Total Candies: After both passes, the code sums all the elements in the `candies` list and returns the sum, which represents the minimum number of candies needed.
+1. Initialization:
+    -   `max_candies` is initialized to 0.
+    -   `open_boxes` is initialized as an empty set.
+    -   `current_keys` is initialized with the indices of boxes with keys (keys[i] for i in range(len(keys))).
+    -   `closed_boxes_queue` is initialized with the `initialBoxes`.
+    -   `found_but_closed` is initialized as an empty set.
+
+2. Main Loop: The `while` loop continues as long as there are boxes in the `closed_boxes_queue`.
+
+3. Box Processing:
+    -   Dequeue a `box_idx` from the `closed_boxes_queue`.
+    -  Key Check: If the `box_idx` has a key (`box_idx in current_keys`) and the box isn't already open (`box_idx not in open_boxes`):
+        -   Add the candies from the box to `max_candies`.
+        -   Add the `box_idx` to `open_boxes`.
+        -   Iterate through the `keys` at `box_idx` to add the keys to `current_keys`.
+        -   Iterate through `containedBoxes[box_idx]` to add these to `closed_boxes_queue`, only if they aren't already open.
+    -  If no key: If the box doesn't have a key but hasn't been opened (`box_idx not in open_boxes`), add it to the `found_but_closed` set.
+
+4. Return Value: After the loop finishes, the function returns the calculated `max_candies`.
 
 ## 4. Potential Improvements
 
-- Clarity and Comments: While the code is functional, adding more comments to explain *why- a particular step is performed would enhance readability.
-- Edge Case Handling: Consider adding an explicit check for empty input lists (`ratings`). While the current code handles a list with no elements correctly, explicitly checking for this improves robustness.
-- Variable Naming: The variable `n` is used for the length of the array. While it's standard, consider a more descriptive name, like `num_children`.
-- Efficiency: The algorithm has a time complexity of O(n) because it iterates through the input list twice. This is already quite efficient for this problem, so no significant optimization is likely.
+-  Clarity and Readability: While the code is functional, adding more descriptive variable names and comments could enhance readability, particularly the logic inside the `if` and `elif` statements.
+-  Efficiency: The use of sets for `open_boxes` and `current_keys` significantly improves efficiency compared to using lists and iterating through them repeatedly. The time complexity is dominated by the `while` loop, which iterates through the boxes in the `closed_boxes_queue`. In the worst case, this could be O(N), where N is the number of boxes.
+-  Early Exit: If a box cannot be opened with the current keys, it would be beneficial to break the current iteration of the `while` loop, preventing needless exploration of other boxes.
 
 ## 5. Extension Ideas
 
-- Multiple Test Cases: Add a more extensive suite of test cases, including cases with various rating distributions (e.g., all same ratings, decreasing ratings, increasing ratings, random ratings).
-- Test Case Generation: Automatically generate test cases to cover a wider range of scenarios.
-- Rating Distribution: Allow the input to specify a range of possible ratings (e.g., a minimum and maximum rating).
-- Constraints: Add parameters to control constraints such as the maximum number of candies a child can receive.
-- Sorting: Instead of using two passes, sort the `ratings` array and then distribute candies based on the sorted order, which might improve readability but could potentially introduce a slight performance overhead.
+-  More Complex Key Interactions: The current implementation only considers the keys directly provided in the `keys` list. One could extend the code to handle more complex key relationships (e.g., keys can unlock other keys).
+-  Negative Candies: Allow for the possibility of boxes having negative candies, which could be obtained by opening certain boxes.
+-  Scoring System: Instead of just calculating the maximum number of candies, implement a more complex scoring system based on factors such as the type of boxes opened, the value of the candies, and the presence of special keys.
+-  Testing: Add more test cases covering various scenarios (e.g., empty initialBoxes, all boxes openable, no boxes openable).
